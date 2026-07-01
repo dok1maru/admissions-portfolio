@@ -13,6 +13,8 @@
 </head>
 <body>
 
+  <canvas id="px" aria-hidden="true"></canvas>
+
   <header class="site-header">
     <a class="brand" href="#top">Taimas Yedrissov</a>
     <nav class="site-nav">
@@ -25,56 +27,44 @@
   <main id="top">
 
     <!-- ============ HERO ============ -->
-    <section class="hero">
+    <section class="hero reveal">
+      <img class="hero-avatar" src="assets/img/portrait.jpg"
+           alt="Taimas Yedrissov"
+           onerror="this.onerror=null;this.src='assets/img/portrait-placeholder.svg'">
+      <h1 class="hero-title">Таймас Едрисов</h1>
       <p class="hero-eyebrow accent">admissions consulting &middot; season 2025/26</p>
-      <h1 class="hero-title">
-        <span class="reveal">ПОСТУПАЕМ</span>
-        <span class="reveal">В&nbsp;ТОП&nbsp;—</span>
-        <span class="reveal">СО&nbsp;СТИПЕНДИЕЙ.</span>
-      </h1>
-      <div class="hero-bottom reveal">
-        <div class="hero-intro">
-          <img class="hero-avatar" src="assets/img/portrait.jpg"
-               alt="Taimas Yedrissov"
-               onerror="this.onerror=null;this.src='assets/img/portrait-placeholder.svg'">
-          <p>Меня зовут <strong>Таймас Едрисов</strong>. Я помогаю школьникам из Казахстана
-             и СНГ поступать в университеты мира — и не платить за это полную цену.</p>
-        </div>
-        <div class="hero-stat">
-          <p class="hero-stat-num">67% успеха</p>
-          <p class="hero-stat-sub">$1.57M<span class="plus">+</span> выигранных стипендий
-            <sup><a class="est" href="#footnote" title="Оценочные суммы на основе публичных данных о стоимости обучения, не официальные award letters">est.</a></sup>
-            &middot; сезон 2025/26</p>
-        </div>
-      </div>
+      <p class="hero-sub">Помогаю школьникам из Казахстана и СНГ поступать
+         в университеты мира — со стипендией, а не за полную цену.</p>
+      <p class="hero-stat-line">67% успеха &middot; $1.57M<span class="plus">+</span> стипендий
+        <a class="est" href="#footnote" title="Оценочные суммы на основе публичных данных о стоимости обучения, не официальные award letters">est.</a>
+        &middot; сезон 2025/26</p>
     </section>
 
     <!-- ============ STAT STRIP ============ -->
     <section class="stats reveal">
       <div class="stat">
-        <span class="stat-num" data-count="67" data-suffix="%">67%</span>
-        <span class="stat-label">успешных кейсов сезона<sup><a class="est" href="#footnote">*</a></sup></span>
+        <span class="stat-num">67%</span>
+        <span class="stat-label">успешных кейсов<a class="est" href="#footnote">*</a></span>
       </div>
       <div class="stat">
         <span class="stat-num">$1,565,576</span>
-        <span class="stat-label">стипендий выиграно, est.<sup><a class="est" href="#footnote">*</a></sup></span>
+        <span class="stat-label">стипендий, est.<a class="est" href="#footnote">*</a></span>
       </div>
       <div class="stat">
-        <span class="stat-num" data-count="11">11</span>
-        <span class="stat-label">успешных поступлений</span>
+        <span class="stat-num">11</span>
+        <span class="stat-label">поступлений</span>
       </div>
       <div class="stat">
         <span class="stat-num">2025/26</span>
-        <span class="stat-label">сезон подачи</span>
+        <span class="stat-label">сезон</span>
       </div>
     </section>
 
     <!-- ============ RESULTS ============ -->
     <section class="results" id="results">
       <div class="section-head reveal">
-        <h2>РЕЗУЛЬТАТЫ 2025/26</h2>
-        <p class="section-note">Суммы — оценка полной стоимости стипендии за 4 года бакалавриата
-          (если не указано иное)<sup><a class="est" href="#footnote">*</a></sup></p>
+        <h2>Результаты 2025/26</h2>
+        <p class="section-note">суммы — оценка за 4 года бакалавриата, если не указано иное<a class="est" href="#footnote">*</a></p>
       </div>
 
       <div class="results-grid">
@@ -182,8 +172,8 @@
 
       </div>
 
-      <p class="results-total reveal">Итого выиграно студентами:
-        <span class="total-num">$1,565,576</span> <em>est.</em><sup><a class="est" href="#footnote">*</a></sup>
+      <p class="results-total reveal">Итого выиграно студентами —
+        <span class="total-num">$1,565,576</span> <em>est.</em><a class="est" href="#footnote">*</a>
       </p>
     </section>
 
@@ -196,9 +186,9 @@
           <figcaption class="accent">I&rsquo;ve been where you are.</figcaption>
         </figure>
         <div class="about-text">
-          <h2>ОБО МНЕ</h2>
+          <h2>Обо мне</h2>
           <p>Я прошёл этот путь сам: в свой сезон получил офферы на
-            <strong>est. $791,700<span class="plus">+</span></strong> от восьми университетов —
+            est. $791,700<span class="plus">+</span> от восьми университетов —
             включая Full Tuition в Oberlin College, Presidential Scholarship в DePauw
             и Full-Ride в UNIST. Так что я знаю, как это работает, не по чужим историям.</p>
           <p>Сейчас учусь в CityUHK и помогаю студентам пройти тот же путь —
@@ -211,7 +201,7 @@
 
     <!-- ============ NEXT CYCLE ============ -->
     <section class="next-cycle reveal">
-      <h2>СЛЕДУЮЩИЙ ЦИКЛ</h2>
+      <h2>Следующий цикл</h2>
       <p>Не каждый кейс закрывается с первого раза — и это нормальная часть процесса.
          Сейчас мы готовим повторную подачу:</p>
       <ul class="next-list">
@@ -235,7 +225,7 @@
   <!-- ============ FOOTER / CTA ============ -->
   <footer class="site-footer" id="contact">
     <p class="footer-eyebrow accent">next season starts now</p>
-    <a class="footer-cta" href="mailto:hello@example.com">НАПИШИТЕ МНЕ</a>
+    <a class="footer-cta" href="mailto:hello@example.com">Написать мне &rarr;</a>
     <div class="footer-meta">
       <span>&copy; 2026 Taimas Yedrissov</span>
       <span>admissions consulting &middot; 2025/26</span>
