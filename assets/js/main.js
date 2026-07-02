@@ -78,7 +78,7 @@
   update();
 })();
 
-// ============ Интерактивная пиксельная карта мира ============
+// ============ Интерактивная пиксельная карта мира (с лупой) ============
 (function () {
   var canvas = document.getElementById('worldmap');
   var tip = document.getElementById('maptip');
@@ -86,21 +86,29 @@
   if (!canvas || !window.MAPDATA) return;
 
   var D = window.MAPDATA;
-  var CELL = 6;                       // внутренний пиксель сетки
+  var CELL = 6;
   var W = D.W * CELL, H = D.H * CELL;
   canvas.width = W;
   canvas.height = H;
   var ctx = canvas.getContext('2d');
   var rows = D.grid.split('\n');
 
+  // лупа
+  var lens = document.createElement('canvas');
+  lens.id = 'maplens';
+  lens.width = 260; lens.height = 260;
+  lens.hidden = true;
+  canvas.parentNode.appendChild(lens);
+  var lctx = lens.getContext('2d');
+  var ZOOM = 4;
+
   function cityXY(c) {
-    var x = (c.lon + 180) / 360 * W;
-    var y = (D.latTop - c.lat) / (D.latTop - D.latBot) * H;
-    return [x, y];
+    return [(c.lon + 180) / 360 * W, (D.latTop - c.lat) / (D.latTop - D.latBot) * H];
   }
 
-  var pulse = 0;
-  function draw() {
+  var pulse = 0, activeCity = -1, lensPos = null;
+
+  function drawMain() {
     ctx.clearRect(0, 0, W, H);
     for (var j = 0; j < D.H; j++) {
       var row = rows[j];
@@ -111,7 +119,6 @@
         ctx.fillRect(i * CELL + 1, j * CELL + 1, CELL - 2, CELL - 2);
       }
     }
-    // маркеры городов — пульсирующие пиксельные квадраты
     D.cities.forEach(function (c, idx) {
       var p = cityXY(c);
       var s = (pulse % 2 === 0 ? 10 : 12) + (idx === activeCity ? 4 : 0);
@@ -122,12 +129,75 @@
     });
   }
 
-  var activeCity = -1;
-  setInterval(function () { pulse++; draw(); }, 600);
+  function drawLens(mx, my) {
+    var LW = lens.width, LH = lens.height;
+    lctx.clearRect(0, 0, LW, LH);
+    lctx.fillStyle = '#f4f2ee';
+    lctx.fillRect(0, 0, LW, LH);
+    var half = LW / ZOOM / 2; // радиус видимой области в координатах карты
+    var i0 = Math.max(0, Math.floor((mx - half) / CELL));
+    var i1 = Math.min(D.W - 1, Math.ceil((mx + half) / CELL));
+    var j0 = Math.max(0, Math.floor((my - half) / CELL));
+    var j1 = Math.min(D.H - 1, Math.ceil((my + half) / CELL));
+    function tx(x) { return (x - mx) * ZOOM + LW / 2; }
+    function ty(y) { return (y - my) * ZOOM + LH / 2; }
+    for (var j = j0; j <= j1; j++) {
+      var row = rows[j];
+      for (var i = i0; i <= i1; i++) {
+        var c = row[i];
+        if (c === '0') continue;
+        lctx.fillStyle = c === '2' ? '#1a1a1a' : '#c9c5bd';
+        lctx.fillRect(tx(i * CELL + 1), ty(j * CELL + 1), (CELL - 2) * ZOOM, (CELL - 2) * ZOOM);
+      }
+    }
+    // города с подписями
+    lctx.font = '13px "Sofia Sans Condensed", "Arial Narrow", sans-serif';
+    lctx.textAlign = 'center';
+    D.cities.forEach(function (c) {
+      var p = cityXY(c);
+      var x = tx(p[0]), y = ty(p[1]);
+      if (x < -30 || x > LW + 30 || y < -30 || y > LH + 30) return;
+      lctx.fillStyle = '#f4f2ee';
+      lctx.fillRect(x - 8, y - 8, 16, 16);
+      lctx.fillStyle = '#1a1a1a';
+      lctx.fillRect(x - 6, y - 6, 12, 12);
+      var label = c.n.replace(/\s*\p{Extended_Pictographic}+/gu, '');
+      lctx.strokeStyle = '#f4f2ee';
+      lctx.lineWidth = 4;
+      lctx.strokeText(label, x, y - 12);
+      lctx.fillStyle = '#1a1a1a';
+      lctx.fillText(label, x, y - 12);
+    });
+  }
+
+  function positionLens(clientX, clientY) {
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    var mx = (clientX - rect.left) * scale;
+    var my = (clientY - rect.top) * scale;
+    lensPos = [mx, my];
+    var cssX = clientX - rect.left, cssY = clientY - rect.top;
+    var lw = 190; // css-размер лупы
+    var lx = cssX + 24, ly = cssY - lw - 24;
+    if (lx + lw > rect.width) lx = cssX - lw - 24;
+    if (ly < 0) ly = cssY + 24;
+    lens.style.left = lx + 'px';
+    lens.style.top = ly + 'px';
+    lens.hidden = false;
+    drawLens(mx, my);
+  }
+
+  function hideLens() { lens.hidden = true; lensPos = null; }
+
+  setInterval(function () {
+    pulse++;
+    drawMain();
+    if (lensPos) drawLens(lensPos[0], lensPos[1]);
+  }, 600);
 
   function showTip(idx) {
     activeCity = idx;
-    draw();
+    drawMain();
     legend.querySelectorAll('.map-chip').forEach(function (ch, i) {
       ch.classList.toggle('active', i === idx);
     });
@@ -147,7 +217,7 @@
     var rect = canvas.getBoundingClientRect();
     var scale = W / rect.width;
     var x = (evX - rect.left) * scale, y = (evY - rect.top) * scale;
-    var best = -1, bd = 22 * 22;
+    var best = -1, bd = 24 * 24;
     D.cities.forEach(function (c, i) {
       var p = cityXY(c);
       var d = (p[0] - x) * (p[0] - x) + (p[1] - y) * (p[1] - y);
@@ -156,21 +226,36 @@
     return best;
   }
 
-  canvas.addEventListener('mousemove', function (e) { showTip(nearest(e.clientX, e.clientY)); });
-  canvas.addEventListener('mouseleave', function () { showTip(-1); });
-  canvas.addEventListener('click', function (e) { showTip(nearest(e.clientX, e.clientY)); });
+  canvas.addEventListener('mousemove', function (e) {
+    showTip(nearest(e.clientX, e.clientY));
+    positionLens(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('mouseleave', function () { showTip(-1); hideLens(); });
+  canvas.addEventListener('click', function (e) {
+    showTip(nearest(e.clientX, e.clientY));
+    positionLens(e.clientX, e.clientY);
+  });
 
-  // легенда-чипы
   D.cities.forEach(function (c, i) {
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'map-chip';
     b.textContent = c.n;
-    b.addEventListener('click', function () { showTip(activeCity === i ? -1 : i); });
+    b.addEventListener('click', function () {
+      var on = activeCity !== i;
+      showTip(on ? i : -1);
+      if (on) {
+        // лупа над городом
+        var p = cityXY(c);
+        var rect = canvas.getBoundingClientRect();
+        var scale = rect.width / W;
+        positionLens(rect.left + p[0] * scale, rect.top + p[1] * scale);
+      } else hideLens();
+    });
     legend.appendChild(b);
   });
 
-  draw();
+  drawMain();
 })();
 
 // ============ Пиксельные блоки: «Game of Life» в пустых зонах ============

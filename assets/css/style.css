@@ -320,6 +320,19 @@ h2 {
   cursor: crosshair;
 }
 
+/* пиксельная лупа */
+#maplens {
+  position: absolute;
+  z-index: 4;
+  width: 190px;
+  height: 190px;
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  background: var(--paper);
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
 .map-tip {
   position: absolute;
   z-index: 5;
