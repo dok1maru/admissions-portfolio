@@ -41,31 +41,41 @@
   });
 })();
 
-// ============ Карусель результатов ============
+// ============ Карусель: пиксельные квадраты-индикаторы ============
 (function () {
   var track = document.querySelector('.results-grid');
-  if (!track) return;
+  var dotsBox = document.querySelector('.carousel-dots');
+  if (!track || !dotsBox) return;
 
-  function cardWidth() {
-    var card = track.querySelector('.card');
-    return card ? card.getBoundingClientRect().width + 16 : 300;
-  }
+  var cards = track.querySelectorAll('.card');
 
-  document.querySelectorAll('.car-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      track.scrollBy({ left: cardWidth() * (+btn.dataset.dir), behavior: 'smooth' });
+  cards.forEach(function (card, i) {
+    var dot = document.createElement('button');
+    dot.className = 'dot';
+    dot.type = 'button';
+    dot.setAttribute('aria-label', 'Карточка ' + (i + 1));
+    dot.addEventListener('click', function () {
+      var left = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+      track.scrollTo({ left: left, behavior: 'smooth' });
     });
+    dotsBox.appendChild(dot);
   });
 
-  function updateBtns() {
-    var max = track.scrollWidth - track.clientWidth - 2;
-    document.querySelectorAll('.car-btn').forEach(function (btn) {
-      btn.disabled = btn.dataset.dir === '-1' ? track.scrollLeft <= 2 : track.scrollLeft >= max;
+  var dots = dotsBox.querySelectorAll('.dot');
+
+  function update() {
+    var center = track.scrollLeft + track.clientWidth / 2;
+    var best = 0, bestDist = Infinity;
+    cards.forEach(function (card, i) {
+      var d = Math.abs(card.offsetLeft + card.clientWidth / 2 - center);
+      if (d < bestDist) { bestDist = d; best = i; }
     });
+    dots.forEach(function (dot, i) { dot.classList.toggle('active', i === best); });
   }
-  track.addEventListener('scroll', updateBtns, { passive: true });
-  window.addEventListener('resize', updateBtns);
-  updateBtns();
+
+  track.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 })();
 
 // ============ Пиксельные блоки: «Game of Life» в пустых зонах ============

@@ -27,24 +27,17 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero reveal">
-      <div class="hero-text">
-        <img class="hero-avatar" src="assets/img/portrait.jpg"
-             alt="Taimas Yedrissov"
-             onerror="this.onerror=null;this.src='assets/img/portrait-placeholder.svg'">
-        <h1 class="hero-title">Таймас Едрисов</h1>
-        <p class="hero-eyebrow label">finance @ cityu'29 | private admissions consultant</p>
-      </div>
-      <canvas class="pxblock hero-px" aria-hidden="true"></canvas>
+      <img class="hero-avatar" src="assets/img/portrait.jpg"
+           alt="Taimas Yedrissov"
+           onerror="this.onerror=null;this.src='assets/img/portrait-placeholder.svg'">
+      <h1 class="hero-title">Таймас Едрисов</h1>
+      <p class="hero-eyebrow label">finance @ cityu'29 | private admissions consultant</p>
     </section>
 
     <!-- ============ RESULTS ============ -->
     <section class="results" id="results">
       <div class="section-head reveal">
         <h2>$1.6М грантов получили мои ученики (2025/26)</h2>
-        <div class="carousel-nav">
-          <button class="car-btn" data-dir="-1" aria-label="Назад">&larr;</button>
-          <button class="car-btn" data-dir="1" aria-label="Вперёд">&rarr;</button>
-        </div>
       </div>
 
       <div class="results-grid carousel reveal">
@@ -138,6 +131,9 @@
         </article>
 
       </div>
+
+      <!-- пиксельные индикаторы карусели -->
+      <div class="carousel-dots" role="tablist" aria-label="Карточки"></div>
 
       <!-- ============ STAT STRIP ============ -->
       <div class="stats reveal">

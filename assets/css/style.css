@@ -155,60 +155,44 @@ h2 {
 
 /* ============ HERO ============ */
 .hero {
-  padding-top: clamp(64px, 14vh, 130px);
+  padding-top: clamp(56px, 12vh, 110px);
   padding-bottom: clamp(48px, 9vh, 90px);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 260px);
-  gap: clamp(28px, 6vw, 72px);
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-.hero-px { min-height: 220px; }
-
 .hero-avatar {
-  width: 128px;
-  height: 128px;
+  width: clamp(180px, 30vw, 240px);
+  height: clamp(180px, 30vw, 240px);
   border-radius: 50%;
   object-fit: cover;
   object-position: 64% 30%;
   border: 1px solid var(--hair);
   background: #e7e4de;
   display: block;
-  margin-bottom: 20px;
+  margin-bottom: 26px;
   transition: transform 0.35s ease;
   cursor: zoom-in;
 }
-.hero-avatar:hover { transform: scale(1.12); }
+.hero-avatar:hover { transform: scale(1.06); }
 
 .hero-title {
-  font-size: clamp(22px, 3.4vw, 32px);
-  margin-bottom: 4px;
+  font-size: clamp(26px, 4.4vw, 40px);
+  margin-bottom: 8px;
 }
 
-.hero-eyebrow { margin-bottom: 18px; }
-
-.hero-sub {
-  max-width: 480px;
-  margin-bottom: 22px;
-}
-
-.hero-stat-line {
-  font-family: var(--display);
-  font-size: 15px;
-  color: var(--ink);
-  border-top: 1px solid var(--hair);
-  padding-top: 16px;
-  max-width: 480px;
-}
+.hero-eyebrow { margin-bottom: 0; }
 
 /* ============ STATS ============ */
 .stats {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  justify-content: start;
-  gap: clamp(24px, 6vw, 64px);
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: clamp(32px, 8vw, 80px);
   margin-top: clamp(28px, 5vh, 48px);
-  padding-top: 20px;
+  padding-top: 24px;
   border-top: 1px solid var(--hair);
 }
 
@@ -232,50 +216,59 @@ h2 {
 .results { padding-bottom: clamp(56px, 10vh, 100px); }
 
 .section-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 24px;
-  justify-content: space-between;
-  align-items: baseline;
+  text-align: center;
   margin-bottom: 28px;
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 10px;
 }
 
 .section-note { font-size: 12px; color: var(--gray); }
 
-/* стрелки карусели */
-.carousel-nav { display: flex; gap: 8px; }
-.car-btn {
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--hair);
-  background: transparent;
-  color: var(--ink);
-  font-size: 13px;
-  cursor: pointer;
-  transition: border-color 0.2s, opacity 0.2s;
-}
-.car-btn:hover { border-color: var(--ink); }
-.car-btn:disabled { opacity: 0.3; cursor: default; }
-
 /* карусель */
 .results-grid {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  padding: 4px 8px 12px 4px; /* место под пиксельную тень */
+  /* лёгкое затухание по краям — намёк, что можно листать */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
 }
 .results-grid::-webkit-scrollbar { display: none; }
 
+/* карточка — пиксельная жёсткая тень в духе графики внизу */
 .card {
   flex: 0 0 clamp(230px, 38vw, 300px);
-  scroll-snap-align: start;
-  border: 1px solid var(--hair);
+  scroll-snap-align: center;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
   padding: 18px 20px 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 9px 9px 0 var(--ink);
+}
+
+/* пиксельные квадраты-индикаторы (вместо стрелок) */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 2px solid var(--ink);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dot.active { background: var(--ink); }
 
 .card-name {
   font-size: 16px;
@@ -457,9 +450,7 @@ h2 {
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 700px) {
-  .hero { grid-template-columns: 1fr; }
-  .hero-px { min-height: 100px; max-height: 110px; }
-  .stats { grid-template-columns: repeat(2, auto); gap: 20px 40px; }
+  .card { flex-basis: 78vw; }
   .about-inner { grid-template-columns: 1fr; }
   .about-photo { max-width: 180px; }
   .site-nav a:first-child { margin-left: 0; }
