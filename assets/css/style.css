@@ -168,14 +168,18 @@ h2 {
   border-radius: 50%;
   object-fit: cover;
   object-position: 64% 30%;
-  border: 1px solid var(--hair);
+  border: 2px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
   background: #e7e4de;
   display: block;
   margin-bottom: 26px;
-  transition: transform 0.35s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: zoom-in;
 }
-.hero-avatar:hover { transform: scale(1.06); }
+.hero-avatar:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 var(--ink);
+}
 
 .hero-title {
   font-size: clamp(26px, 4.4vw, 40px);
