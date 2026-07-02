@@ -321,51 +321,69 @@ h2 {
 
 .map-wrap { position: relative; }
 
-#worldmap {
+#worldmap svg {
   display: block;
   width: 100%;
   height: auto;
-  image-rendering: pixelated;
-  cursor: crosshair;
 }
 
-/* пиксельная лупа */
-#maplens {
-  position: absolute;
-  z-index: 4;
-  width: 190px;
-  height: 190px;
-  border: 3px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
-  background: var(--paper);
+/* страны */
+.country {
+  fill: #e7e5df;
+  stroke: var(--paper);
+  stroke-width: 0.6;
+}
+.country.hi {
+  fill: #b3afa6;
+  cursor: pointer;
+  transition: fill 0.25s;
+}
+.country.hi:hover { fill: #8d8a84; }
+.country.hi.active { fill: var(--ink); }
+
+/* города — пиксельные квадраты */
+.city {
+  fill: var(--ink);
+  stroke: var(--paper);
+  stroke-width: 1.5;
   pointer-events: none;
-  image-rendering: pixelated;
 }
 
-.map-tip {
-  position: absolute;
-  z-index: 5;
+/* панель с университетами выбранной страны */
+.map-panel {
+  margin: 20px auto 0;
+  max-width: 420px;
+  text-align: center;
   background: var(--paper);
   border: 2px solid var(--ink);
   box-shadow: 5px 5px 0 var(--ink);
-  padding: 10px 14px;
-  max-width: 250px;
-  pointer-events: none;
-  transform: translate(-50%, -100%);
+  padding: 14px 18px;
 }
-.map-tip .tip-city {
+.map-panel .tip-city {
   font-family: var(--display);
-  font-size: 15px;
-  margin-bottom: 4px;
+  font-size: 16px;
+  margin-bottom: 6px;
 }
-.map-tip .tip-uni {
+.map-panel .tip-uni {
   font-family: var(--cond);
-  font-size: 12.5px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--gray);
   display: block;
+  padding: 2px 0;
 }
+
+.chip-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--ink);
+  margin-right: 7px;
+  vertical-align: -1px;
+  transition: background 0.2s;
+}
+.map-chip.active .chip-dot { background: var(--ink); }
 
 .map-legend {
   display: flex;
