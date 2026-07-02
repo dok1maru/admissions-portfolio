@@ -115,10 +115,10 @@ h2 {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-decoration: none;
-  color: var(--ink);
-  transition: opacity 0.2s;
+  color: var(--gray);
+  transition: color 0.2s;
 }
-.site-nav a:hover { opacity: 0.55; }
+.site-nav a:hover { color: var(--ink); }
 
 /* ============ КОНТЕЙНЕР ============ */
 .hero, .stats, .results, .about, .next-cycle, .footnote {
@@ -142,8 +142,8 @@ h2 {
 .hero-px { min-height: 220px; }
 
 .hero-avatar {
-  width: 56px;
-  height: 56px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   object-fit: cover;
   object-position: 64% 30%;
