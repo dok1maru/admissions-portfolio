@@ -195,9 +195,25 @@ h2 {
   box-shadow: 0 0 0 2px var(--ink);
 }
 .coin-front { object-position: 64% 30%; }
-.coin-back {
-  transform: rotateY(180deg);
-  object-position: 50% 35%; /* лицо в круге */
+.coin-back { transform: rotateY(180deg); }
+
+/* кнопка «связаться» */
+.btn-contact {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  padding: 9px 26px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-contact:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 var(--ink);
 }
 
 .hero-title {
