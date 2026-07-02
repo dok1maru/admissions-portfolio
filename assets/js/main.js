@@ -19,6 +19,33 @@
   els.forEach(function (el) { io.observe(el); });
 })();
 
+// ============ Карусель результатов ============
+(function () {
+  var track = document.querySelector('.results-grid');
+  if (!track) return;
+
+  function cardWidth() {
+    var card = track.querySelector('.card');
+    return card ? card.getBoundingClientRect().width + 16 : 300;
+  }
+
+  document.querySelectorAll('.car-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      track.scrollBy({ left: cardWidth() * (+btn.dataset.dir), behavior: 'smooth' });
+    });
+  });
+
+  function updateBtns() {
+    var max = track.scrollWidth - track.clientWidth - 2;
+    document.querySelectorAll('.car-btn').forEach(function (btn) {
+      btn.disabled = btn.dataset.dir === '-1' ? track.scrollLeft <= 2 : track.scrollLeft >= max;
+    });
+  }
+  track.addEventListener('scroll', updateBtns, { passive: true });
+  window.addEventListener('resize', updateBtns);
+  updateBtns();
+})();
+
 // ============ Пиксельные блоки: «Game of Life» в пустых зонах ============
 // Процедурная анимация вместо гифки: 0 сетевых запросов, ~1.5 КБ кода.
 (function () {
