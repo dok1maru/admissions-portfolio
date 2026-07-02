@@ -86,12 +86,12 @@
   if (!holder || !legend || !panel) return;
 
   var COUNTRIES = [
-    { id: 'kz', name: 'Казахстан', unis: ['Nazarbayev University — я'] },
-    { id: 'ae', name: 'ОАЭ', unis: ['NYU Abu Dhabi — Камила', 'MBZUAI — Арсен'] },
-    { id: 'cn', name: 'Китай и Гонконг', unis: ['CUHK — Тарлан, я', 'CityUHK — Тарлан, я', 'Lingnan University — Соня', 'CUHK-Shenzhen — Алмаз, я', 'HKUST-Guangzhou — Соня, я'] },
-    { id: 'kr', name: 'Южная Корея', unis: ['UNIST — Соня, я', 'DGIST — Соня'] },
-    { id: 'ca', name: 'Канада', unis: ['University of Toronto — Камила', 'Huron at Western — Айганым'] },
-    { id: 'us', name: 'США', unis: ['RIT — Тарлан', 'Oberlin College — я', 'DePauw — я'] }
+    { id: 'kz', name: 'Kazakhstan', unis: ['Nazarbayev University — я'] },
+    { id: 'ae', name: 'UAE', unis: ['NYU Abu Dhabi — Камила', 'MBZUAI — Арсен'] },
+    { id: 'cn', name: 'China & Hong Kong', unis: ['CUHK — Тарлан, я', 'CityUHK — Тарлан, я', 'Lingnan University — Соня', 'CUHK-Shenzhen — Алмаз, я', 'HKUST-Guangzhou — Соня, я'] },
+    { id: 'kr', name: 'South Korea', unis: ['UNIST — Соня, я', 'DGIST — Соня'] },
+    { id: 'ca', name: 'Canada', unis: ['University of Toronto — Камила', 'Huron University — Айганым'] },
+    { id: 'us', name: 'USA', unis: ['RIT — Тарлан', 'Oberlin College — я', 'DePauw — я'] }
   ];
 
   fetch('assets/img/worldmap.svg')
@@ -142,18 +142,24 @@
       lens.appendChild(inner);
       holder.parentNode.appendChild(lens);
 
-      // подписи городов внутри лупы (читаемый размер)
+      // в лупе: маркеры меньше (не раздуваются от зума) + разнесённые подписи
       var lensSvg = inner.querySelector('svg');
       var NS = 'http://www.w3.org/2000/svg';
       lensSvg.querySelectorAll('.city').forEach(function (r) {
-        var name = r.querySelector('title') ? r.querySelector('title').textContent : '';
-        var x = parseFloat(r.getAttribute('x')) + 4.5;
-        var y = parseFloat(r.getAttribute('y')) - 3.5;
+        var cx = parseFloat(r.getAttribute('x')) + 4.5;
+        var cy = parseFloat(r.getAttribute('y')) + 4.5;
+        // уменьшаем квадрат: 4 юнита вместо 9
+        r.setAttribute('x', cx - 2);
+        r.setAttribute('y', cy - 2);
+        r.setAttribute('width', 4);
+        r.setAttribute('height', 4);
+        r.setAttribute('stroke-width', 0.8);
         var t = document.createElementNS(NS, 'text');
         t.setAttribute('class', 'city-label');
-        t.setAttribute('x', x);
-        t.setAttribute('y', y);
-        t.textContent = name;
+        t.setAttribute('x', cx + parseFloat(r.dataset.dx || 0));
+        t.setAttribute('y', cy + parseFloat(r.dataset.dy || -4));
+        t.setAttribute('text-anchor', r.dataset.anchor || 'middle');
+        t.textContent = r.dataset.name || '';
         lensSvg.appendChild(t);
       });
 

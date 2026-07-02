@@ -367,11 +367,11 @@ h2 {
 /* подписи городов в лупе — читаемый размер */
 .city-label {
   font-family: var(--cond);
-  font-size: 5px;
+  font-size: 4.5px;
   fill: var(--ink);
   paint-order: stroke;
   stroke: var(--paper);
-  stroke-width: 1.4px;
+  stroke-width: 1.2px;
   letter-spacing: 0.02em;
 }
 #worldmap .city-label { display: none; }
