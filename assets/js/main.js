@@ -78,6 +78,101 @@
   update();
 })();
 
+// ============ Интерактивная пиксельная карта мира ============
+(function () {
+  var canvas = document.getElementById('worldmap');
+  var tip = document.getElementById('maptip');
+  var legend = document.getElementById('maplegend');
+  if (!canvas || !window.MAPDATA) return;
+
+  var D = window.MAPDATA;
+  var CELL = 6;                       // внутренний пиксель сетки
+  var W = D.W * CELL, H = D.H * CELL;
+  canvas.width = W;
+  canvas.height = H;
+  var ctx = canvas.getContext('2d');
+  var rows = D.grid.split('\n');
+
+  function cityXY(c) {
+    var x = (c.lon + 180) / 360 * W;
+    var y = (D.latTop - c.lat) / (D.latTop - D.latBot) * H;
+    return [x, y];
+  }
+
+  var pulse = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (var j = 0; j < D.H; j++) {
+      var row = rows[j];
+      for (var i = 0; i < D.W; i++) {
+        var c = row[i];
+        if (c === '0') continue;
+        ctx.fillStyle = c === '2' ? '#1a1a1a' : '#c9c5bd';
+        ctx.fillRect(i * CELL + 1, j * CELL + 1, CELL - 2, CELL - 2);
+      }
+    }
+    // маркеры городов — пульсирующие пиксельные квадраты
+    D.cities.forEach(function (c, idx) {
+      var p = cityXY(c);
+      var s = (pulse % 2 === 0 ? 10 : 12) + (idx === activeCity ? 4 : 0);
+      ctx.fillStyle = '#f4f2ee';
+      ctx.fillRect(p[0] - s / 2 - 2, p[1] - s / 2 - 2, s + 4, s + 4);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(p[0] - s / 2, p[1] - s / 2, s, s);
+    });
+  }
+
+  var activeCity = -1;
+  setInterval(function () { pulse++; draw(); }, 600);
+
+  function showTip(idx) {
+    activeCity = idx;
+    draw();
+    legend.querySelectorAll('.map-chip').forEach(function (ch, i) {
+      ch.classList.toggle('active', i === idx);
+    });
+    if (idx < 0) { tip.hidden = true; return; }
+    var c = D.cities[idx];
+    var p = cityXY(c);
+    var rect = canvas.getBoundingClientRect();
+    var scale = rect.width / W;
+    tip.innerHTML = '<div class="tip-city">' + c.n + '</div>' +
+      c.u.map(function (u) { return '<span class="tip-uni">' + u + '</span>'; }).join('');
+    tip.style.left = (p[0] * scale) + 'px';
+    tip.style.top = (p[1] * scale - 12) + 'px';
+    tip.hidden = false;
+  }
+
+  function nearest(evX, evY) {
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    var x = (evX - rect.left) * scale, y = (evY - rect.top) * scale;
+    var best = -1, bd = 22 * 22;
+    D.cities.forEach(function (c, i) {
+      var p = cityXY(c);
+      var d = (p[0] - x) * (p[0] - x) + (p[1] - y) * (p[1] - y);
+      if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+
+  canvas.addEventListener('mousemove', function (e) { showTip(nearest(e.clientX, e.clientY)); });
+  canvas.addEventListener('mouseleave', function () { showTip(-1); });
+  canvas.addEventListener('click', function (e) { showTip(nearest(e.clientX, e.clientY)); });
+
+  // легенда-чипы
+  D.cities.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'map-chip';
+    b.textContent = c.n;
+    b.addEventListener('click', function () { showTip(activeCity === i ? -1 : i); });
+    legend.appendChild(b);
+  });
+
+  draw();
+})();
+
 // ============ Пиксельные блоки: «Game of Life» в пустых зонах ============
 // Процедурная анимация вместо гифки: 0 сетевых запросов, ~1.5 КБ кода.
 (function () {

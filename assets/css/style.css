@@ -303,6 +303,74 @@ h2 {
 
 .offer-secondary { opacity: 0.5; }
 
+/* ============ GEO MAP ============ */
+.geo {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--pad) clamp(56px, 10vh, 100px);
+}
+
+.map-wrap { position: relative; }
+
+#worldmap {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  cursor: crosshair;
+}
+
+.map-tip {
+  position: absolute;
+  z-index: 5;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  padding: 10px 14px;
+  max-width: 250px;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+}
+.map-tip .tip-city {
+  font-family: var(--display);
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.map-tip .tip-uni {
+  font-family: var(--cond);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray);
+  display: block;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+.map-chip {
+  font-family: var(--cond);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.map-chip:hover, .map-chip.active {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--ink);
+  background: var(--paper);
+}
+
 /* ============ ABOUT ============ */
 .about { padding-bottom: clamp(56px, 10vh, 100px); }
 
