@@ -145,7 +145,7 @@ h2 {
 .site-nav a:hover { color: var(--ink); }
 
 /* ============ КОНТЕЙНЕР ============ */
-.hero, .stats, .results, .about, .next-cycle, .footnote {
+.hero, .results, .about {
   max-width: var(--maxw);
   margin-left: auto;
   margin-right: auto;
@@ -207,7 +207,9 @@ h2 {
   grid-template-columns: repeat(4, auto);
   justify-content: start;
   gap: clamp(24px, 6vw, 64px);
-  padding-bottom: clamp(48px, 9vh, 90px);
+  margin-top: clamp(28px, 5vh, 48px);
+  padding-top: 20px;
+  border-top: 1px solid var(--hair);
 }
 
 .stat-num {
