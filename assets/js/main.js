@@ -41,41 +41,73 @@
   });
 })();
 
-// ============ Карусель: пиксельные квадраты-индикаторы ============
+// ============ Бесконечная карусель с пиксельными индикаторами ============
 (function () {
   var track = document.querySelector('.results-grid');
   var dotsBox = document.querySelector('.carousel-dots');
   if (!track || !dotsBox) return;
 
-  var cards = track.querySelectorAll('.card');
+  var real = Array.prototype.slice.call(track.querySelectorAll('.card'));
+  var n = real.length;
+  if (n < 2) return;
+  real.forEach(function (c, i) { c.dataset.idx = i; });
 
-  cards.forEach(function (card, i) {
+  // клоны по краям: слева от первого — последние, справа от последнего — первые
+  var CLONES = Math.min(2, n);
+  for (var k = 0; k < CLONES; k++) {
+    var pre = real[n - 1 - k].cloneNode(true);
+    pre.setAttribute('aria-hidden', 'true');
+    track.insertBefore(pre, track.firstChild);
+    var post = real[k].cloneNode(true);
+    post.setAttribute('aria-hidden', 'true');
+    track.appendChild(post);
+  }
+
+  var all = Array.prototype.slice.call(track.querySelectorAll('.card'));
+
+  function loopW() {
+    var gap = 20;
+    return real[n - 1].offsetLeft + real[n - 1].offsetWidth + gap - real[0].offsetLeft;
+  }
+
+  function centerOn(card, smooth) {
+    var left = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+    track.scrollTo({ left: left, behavior: smooth ? 'smooth' : 'auto' });
+  }
+
+  real.forEach(function (card, i) {
     var dot = document.createElement('button');
     dot.className = 'dot';
     dot.type = 'button';
     dot.setAttribute('aria-label', 'Карточка ' + (i + 1));
-    dot.addEventListener('click', function () {
-      var left = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
-      track.scrollTo({ left: left, behavior: 'smooth' });
-    });
+    dot.addEventListener('click', function () { centerOn(real[i], true); });
     dotsBox.appendChild(dot);
   });
-
   var dots = dotsBox.querySelectorAll('.dot');
 
-  function update() {
+  function onScroll() {
+    // активная точка — по ближайшей к центру карточке (клоны мапятся на оригинал)
     var center = track.scrollLeft + track.clientWidth / 2;
-    var best = 0, bestDist = Infinity;
-    cards.forEach(function (card, i) {
+    var bestEl = all[0], bd = Infinity;
+    all.forEach(function (card) {
       var d = Math.abs(card.offsetLeft + card.clientWidth / 2 - center);
-      if (d < bestDist) { bestDist = d; best = i; }
+      if (d < bd) { bd = d; bestEl = card; }
     });
-    dots.forEach(function (dot, i) { dot.classList.toggle('active', i === best); });
+    var idx = +(bestEl.dataset.idx || 0);
+    dots.forEach(function (dot, i) { dot.classList.toggle('active', i === idx); });
+
+    // бесшовный перескок из зоны клонов
+    var L = track.scrollLeft, lw = loopW();
+    var lead = real[0].offsetLeft, cw = real[0].clientWidth;
+    if (L < lead - cw) track.scrollLeft = L + lw;
+    else if (L > lead + lw - cw) track.scrollLeft = L - lw;
   }
 
-  track.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+  track.addEventListener('scroll', function () { requestAnimationFrame(onScroll); }, { passive: true });
+  window.addEventListener('resize', function () { centerOn(real[0], false); });
+
+  // старт — на первой реальной карточке
+  requestAnimationFrame(function () { centerOn(real[0], false); onScroll(); });
 })();
 
 // ============ Карта мира: страны + легенда (стиль 9labs, монохром) ============
@@ -156,10 +188,17 @@
         r.setAttribute('stroke-width', 0.8);
         var t = document.createElementNS(NS, 'text');
         t.setAttribute('class', 'city-label');
-        t.setAttribute('x', cx + parseFloat(r.dataset.dx || 0));
+        var lx = cx + parseFloat(r.dataset.dx || 0);
+        t.setAttribute('x', lx);
         t.setAttribute('y', cy + parseFloat(r.dataset.dy || -4));
         t.setAttribute('text-anchor', r.dataset.anchor || 'middle');
-        t.textContent = r.dataset.name || '';
+        (r.dataset.unis || r.dataset.name || '').split('|').forEach(function (line, li) {
+          var ts = document.createElementNS(NS, 'tspan');
+          ts.setAttribute('x', lx);
+          ts.setAttribute('dy', li === 0 ? 0 : 5);
+          ts.textContent = line;
+          t.appendChild(ts);
+        });
         lensSvg.appendChild(t);
       });
 
