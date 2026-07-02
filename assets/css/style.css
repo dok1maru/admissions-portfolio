@@ -477,9 +477,9 @@ h2 {
 
 .about-inner {
   display: grid;
-  grid-template-columns: minmax(200px, 260px) 1fr;
+  grid-template-columns: minmax(200px, 280px) 1fr;
   gap: clamp(28px, 5vw, 64px);
-  align-items: center;
+  align-items: start; /* фото прижато к верху, кнопка «связаться» помещается */
 }
 
 /* фото в стиле карточек: пиксельная рамка + жёсткая тень, без ч/б */
