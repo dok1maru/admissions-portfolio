@@ -146,6 +146,7 @@ h2 {
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: 64% 30%;
   border: 1px solid var(--hair);
   background: #e7e4de;
   display: block;
