@@ -19,6 +19,28 @@
   els.forEach(function (el) { io.observe(el); });
 })();
 
+// ============ Лайтбокс: клик по фото — на весь экран ============
+(function () {
+  var lb = document.getElementById('lightbox');
+  if (!lb) return;
+
+  document.querySelectorAll('.hero-avatar, .about-photo img').forEach(function (img) {
+    img.addEventListener('click', function () {
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function close() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  lb.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') close();
+  });
+})();
+
 // ============ Карусель результатов ============
 (function () {
   var track = document.querySelector('.results-grid');
