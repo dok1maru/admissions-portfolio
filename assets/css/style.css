@@ -8,6 +8,24 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-light.woff2') format('woff2'),
+       url('../fonts/inter-light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Condensed';
+  src: url('../fonts/sofia.woff2') format('woff2'),
+       url('../fonts/sofia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============ BASE ============ */
 :root {
   --paper: #f4f2ee;
@@ -15,7 +33,8 @@
   --gray: #8d8a84;
   --hair: #dcd9d3;
   --display: 'DOV', 'Arial', sans-serif;
-  --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --cond: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif;
   --pad: clamp(20px, 5vw, 64px);
   --maxw: 880px;
 }
@@ -28,10 +47,13 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--body);
-  font-size: 15px;
+  font-weight: 300;
+  font-size: 15.5px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
+
+strong { font-weight: 500; }
 
 a { color: inherit; }
 
@@ -61,18 +83,18 @@ h1, h2, h3 {
 
 /* заголовки секций — маленькие, сдержанные */
 h2 {
-  font-size: 13px;
-  font-family: var(--body);
-  font-weight: 500;
+  font-size: 15px;
+  font-family: var(--cond);
+  font-weight: normal;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--gray);
 }
 
-/* сдержанная подпись вместо акцентного шрифта */
+/* сдержанная подпись — узкий гротеск */
 .label {
-  font-size: 11px;
-  font-weight: 500;
+  font-family: var(--cond);
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.16em;
   color: var(--gray);
@@ -111,9 +133,11 @@ h2 {
 
 .site-nav a {
   margin-left: clamp(12px, 3vw, 28px);
-  font-size: 12px;
+  font-family: var(--cond);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   text-decoration: none;
   color: var(--gray);
   transition: color 0.2s;
@@ -195,8 +219,9 @@ h2 {
 .stat-label {
   display: block;
   margin-top: 2px;
-  font-size: 11px;
-  letter-spacing: 0.05em;
+  font-family: var(--cond);
+  font-size: 13px;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--gray);
 }
@@ -263,9 +288,10 @@ h2 {
 .offer-uni { display: block; font-size: 14px; }
 .offer-type {
   display: block;
-  font-size: 11px;
+  font-family: var(--cond);
+  font-size: 12.5px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--gray);
 }
 
@@ -330,9 +356,10 @@ h2 {
 
 .uni-strip {
   margin-top: 18px;
-  font-size: 11px;
+  font-family: var(--cond);
+  font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   color: var(--gray);
 }
 
@@ -405,9 +432,10 @@ h2 {
   gap: 6px;
   padding-top: 32px;
   padding-bottom: 24px;
-  font-size: 10.5px;
+  font-family: var(--cond);
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: var(--gray);
 }
 
