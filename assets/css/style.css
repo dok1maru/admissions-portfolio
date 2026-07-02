@@ -162,24 +162,40 @@ h2 {
   text-align: center;
 }
 
-.hero-avatar {
+/* монетка: ховер — переворот на вторую фотку */
+.coin {
   width: clamp(180px, 30vw, 240px);
   height: clamp(180px, 30vw, 240px);
+  margin-bottom: 26px;
+  perspective: 900px;
+  cursor: zoom-in;
+  /* тень справа-снизу, следует за круглой формой */
+  filter: drop-shadow(7px 7px 0 var(--ink));
+}
+.coin-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+.coin:hover .coin-inner { transform: rotateY(180deg); }
+.coin-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  object-position: 64% 30%;
-  border: 2px solid var(--ink);
-  box-shadow: 7px 7px 0 var(--ink);
   background: #e7e4de;
-  display: block;
-  margin-bottom: 26px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: zoom-in;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* обводка: белая жирная, затем тонкая чёрная */
+  border: 6px solid #ffffff;
+  box-shadow: 0 0 0 2px var(--ink);
 }
-.hero-avatar:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 var(--ink);
-}
+.coin-front { object-position: 64% 30%; }
+.coin-back { transform: rotateY(180deg); }
 
 .hero-title {
   font-size: clamp(26px, 4.4vw, 40px);

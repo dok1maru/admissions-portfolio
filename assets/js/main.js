@@ -24,8 +24,10 @@
   var lb = document.getElementById('lightbox');
   if (!lb) return;
 
-  document.querySelectorAll('.hero-avatar, .about-photo img').forEach(function (img) {
+  var lbImg = lb.querySelector('img');
+  document.querySelectorAll('.coin-face, .about-photo img').forEach(function (img) {
     img.addEventListener('click', function () {
+      if (lbImg) lbImg.src = img.src; // открываем именно ту фотку, по которой кликнули
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
     });
