@@ -611,4 +611,18 @@ h2 {
   .about-photo { max-width: 240px; }
   .about-text { text-align: center; }
   .site-nav a:first-child { margin-left: 0; }
+
+  /* хедер на телефоне: бренд сверху, навигация под ним, с воздухом */
+  .site-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-top: 18px;
+    padding-bottom: 14px;
+  }
+  .site-nav {
+    display: flex;
+    gap: 22px;
+  }
+  .site-nav a { margin-left: 0; }
 }
