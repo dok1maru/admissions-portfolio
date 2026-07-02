@@ -195,7 +195,10 @@ h2 {
   box-shadow: 0 0 0 2px var(--ink);
 }
 .coin-front { object-position: 64% 30%; }
-.coin-back { transform: rotateY(180deg); }
+.coin-back {
+  transform: rotateY(180deg);
+  object-position: 50% 35%; /* лицо в круге */
+}
 
 .hero-title {
   font-size: clamp(26px, 4.4vw, 40px);
