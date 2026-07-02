@@ -349,6 +349,37 @@ h2 {
   pointer-events: none;
 }
 
+/* лупа */
+#maplens {
+  position: absolute;
+  z-index: 6;
+  width: 210px;
+  height: 210px;
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  background: var(--paper);
+  overflow: hidden;
+  pointer-events: none;
+}
+#maplens .lens-inner { position: absolute; }
+#maplens svg { display: block; }
+
+/* подписи городов в лупе — читаемый размер */
+.city-label {
+  font-family: var(--cond);
+  font-size: 5px;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 1.4px;
+  letter-spacing: 0.02em;
+}
+#worldmap .city-label { display: none; }
+
+@media (hover: none) {
+  #maplens { display: none; } /* на тач-устройствах лупы нет */
+}
+
 /* панель с университетами выбранной страны */
 .map-panel {
   margin: 20px auto 0;

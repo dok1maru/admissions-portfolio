@@ -130,6 +130,58 @@
           el.addEventListener('click', function () { setActive(active === i ? -1 : i); });
         });
       });
+
+      // ---- лупа с зумом ----
+      var ZOOM = 4;
+      var lens = document.createElement('div');
+      lens.id = 'maplens';
+      lens.hidden = true;
+      var inner = document.createElement('div');
+      inner.className = 'lens-inner';
+      inner.innerHTML = svg;
+      lens.appendChild(inner);
+      holder.parentNode.appendChild(lens);
+
+      // подписи городов внутри лупы (читаемый размер)
+      var lensSvg = inner.querySelector('svg');
+      var NS = 'http://www.w3.org/2000/svg';
+      lensSvg.querySelectorAll('.city').forEach(function (r) {
+        var name = r.querySelector('title') ? r.querySelector('title').textContent : '';
+        var x = parseFloat(r.getAttribute('x')) + 4.5;
+        var y = parseFloat(r.getAttribute('y')) - 3.5;
+        var t = document.createElementNS(NS, 'text');
+        t.setAttribute('class', 'city-label');
+        t.setAttribute('x', x);
+        t.setAttribute('y', y);
+        t.textContent = name;
+        lensSvg.appendChild(t);
+      });
+
+      function moveLens(clientX, clientY) {
+        var rect = holder.getBoundingClientRect();
+        var fx = (clientX - rect.left) / rect.width;
+        var fy = (clientY - rect.top) / rect.height;
+        if (fx < 0 || fx > 1 || fy < 0 || fy > 1) { lens.hidden = true; return; }
+        var LW = lens.offsetWidth || 210;
+        var innerW = rect.width * ZOOM;
+        var innerH = rect.height * ZOOM;
+        var innerSvg = inner.querySelector('svg');
+        innerSvg.style.width = innerW + 'px';
+        innerSvg.style.height = innerH + 'px';
+        inner.style.left = (LW / 2 - fx * innerW) + 'px';
+        inner.style.top = (LW / 2 - fy * innerH) + 'px';
+        var cssX = clientX - rect.left, cssY = clientY - rect.top;
+        var lx = cssX + 22, ly = cssY - LW - 22;
+        if (lx + LW > rect.width) lx = cssX - LW - 22;
+        if (ly < 0) ly = cssY + 22;
+        lens.style.left = lx + 'px';
+        lens.style.top = ly + 'px';
+        lens.hidden = false;
+      }
+
+      holder.addEventListener('mousemove', function (e) { moveLens(e.clientX, e.clientY); });
+      holder.addEventListener('mouseleave', function () { lens.hidden = true; });
+      holder.addEventListener('click', function (e) { moveLens(e.clientX, e.clientY); });
     });
 })();
 
