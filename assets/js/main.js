@@ -122,10 +122,10 @@
   var COUNTRIES = [
     { id: 'kz', name: 'Kazakhstan', unis: ['Nazarbayev University — я'] },
     { id: 'ae', name: 'UAE', unis: ['NYU Abu Dhabi — Камила', 'MBZUAI — Арсен'] },
-    { id: 'cn', name: 'China & Hong Kong', unis: ['CUHK — Тарлан, я', 'CityUHK — Тарлан, я', 'Lingnan University — Соня', 'CUHK-Shenzhen — Алмаз, я', 'HKUST-Guangzhou — Соня, я', 'NYU Shanghai — Алишер'] },
+    { id: 'cn', name: 'China & Hong Kong', unis: ['CUHK — Тарлан, я', 'CityUHK — Тарлан, я', 'Lingnan University — Соня', 'HKBU — Соня, я', 'CUHK-Shenzhen — Алмаз, я', 'HKUST-Guangzhou — Соня, я', 'NYU Shanghai — Алишер'] },
     { id: 'kr', name: 'South Korea', unis: ['UNIST — Соня, я', 'DGIST — Соня'] },
-    { id: 'ca', name: 'Canada', unis: ['University of Toronto — Камила', 'Huron University — Айганым'] },
-    { id: 'us', name: 'USA', unis: ['RIT — Тарлан', 'UNC — Айганым', 'Oberlin College — я', 'DePauw — я'] }
+    { id: 'ca', name: 'Canada', unis: ['University of Toronto — Камила', 'Huron University — Айганым', 'Western University — Айганым'] },
+    { id: 'us', name: 'USA', unis: ['RIT — Тарлан', 'UNC — Айганым', 'Oberlin College — я', 'DePauw — я', 'Case Western — я'] }
   ];
 
   fetch('assets/img/worldmap.svg')
