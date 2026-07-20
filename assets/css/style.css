@@ -74,7 +74,12 @@ a { color: inherit; }
   color: var(--ink);
   text-align: center;
   flex: 0 0 auto;
-  min-width: 3.2ch;
+  min-width: 3.4ch;
+}
+.ar-ch {
+  display: inline-block;
+  transition: transform 0.06s steps(1), opacity 0.06s steps(1);
+  will-change: transform;
 }
 .ar-side {
   flex: 1 1 0;

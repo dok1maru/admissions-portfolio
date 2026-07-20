@@ -236,17 +236,43 @@
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // --- счётчик числа: <1% -> <4% и обратно ---
+  // --- счётчик числа: <1% -> <5% и обратно, c пиксельным глитчем ---
   var numEl = document.getElementById('arNum');
   if (numEl) {
-    var STEPS = ['<1%', '<2%', '<3%', '<4%'];
+    var STEPS = ['<1%', '<2%', '<3%', '<4%', '<5%'];
     var idx = 0, dir = 1;
+    // рендерим каждый символ отдельным span — чтобы дёргать их врозь
+    function render(txt) {
+      numEl.innerHTML = '';
+      txt.split('').forEach(function (ch) {
+        var s = document.createElement('span');
+        s.className = 'ar-ch';
+        s.textContent = ch;
+        numEl.appendChild(s);
+      });
+    }
+    render(STEPS[idx]);
+
     setInterval(function () {
       idx += dir;
       if (idx >= STEPS.length - 1) { idx = STEPS.length - 1; dir = -1; }
       else if (idx <= 0) { idx = 0; dir = 1; }
-      numEl.textContent = STEPS[idx];
+      render(STEPS[idx]);
     }, 650);
+
+    // пиксельный джиттер: символы чуть-чуть смещаются рывками
+    setInterval(function () {
+      numEl.querySelectorAll('.ar-ch').forEach(function (s) {
+        if (Math.random() < 0.5) {
+          s.style.transform = 'none';
+          return;
+        }
+        var dx = (Math.random() * 6 - 3) | 0;   // −3..3 px, целыми — «пиксельно»
+        var dy = (Math.random() * 6 - 3) | 0;
+        s.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+        s.style.opacity = Math.random() < 0.15 ? '0.35' : '1';
+      });
+    }, 90);
   }
 
   // --- «Game of Life» мозаика в боковых блоках ---
