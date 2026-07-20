@@ -71,13 +71,14 @@ a { color: inherit; }
   font-family: var(--display);
   font-size: clamp(44px, 9vw, 96px);
   line-height: 1;
-  color: var(--ink);
+  color: #9a978f;
   text-align: center;
   flex: 0 0 auto;
   min-width: 3.4ch;
 }
 .ar-ch {
   display: inline-block;
+  transition: transform 0.35s ease;
   will-change: transform;
 }
 .ar-side {

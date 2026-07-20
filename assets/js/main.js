@@ -237,7 +237,8 @@
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var PIXEL = 7;    // единый размер пикселя (для мозаики и шага джиттера)
-  var TICK  = 200;  // единый такт всей микро-анимации
+  var TICK  = 560;  // единый такт всей микро-анимации — спокойный ритм
+  var INK   = '#9a978f'; // приглушённый серый (единый цвет)
 
   // --- мозаики по бокам (Game of Life) ---
   var blocks = [];
@@ -276,7 +277,7 @@
     function draw() {
       if (!grid) return;
       ctx.clearRect(0, 0, cols, rows);
-      ctx.fillStyle = '#1a1a1a';           // единый цвет
+      ctx.fillStyle = INK;                 // единый цвет
       for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++)
         if (grid[y * cols + x]) ctx.fillRect(x, y, 1, 1);
     }
@@ -313,13 +314,14 @@
         else if (idx <= 0) { idx = 0; dir = 1; }
         render(STEPS[idx]);
       }
-      // джиттер: смещение кратно PIXEL, тот же цвет (без прозрачности)
-      numEl.querySelectorAll('.ar-ch').forEach(function (s) {
-        var r = Math.random();
-        var dx = (r < 0.5 ? 0 : (r < 0.75 ? PIXEL : -PIXEL));
-        var dy = (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? PIXEL : -PIXEL));
-        s.style.transform = (dx || dy) ? 'translate(' + dx + 'px,' + dy + 'px)' : 'none';
-      });
+      // джиттер: редко и мягко — не более одного символа за такт смещается
+      var chs = numEl.querySelectorAll('.ar-ch');
+      chs.forEach(function (s) { s.style.transform = 'none'; });
+      if (Math.random() < 0.6 && chs.length) {
+        var s = chs[(Math.random() * chs.length) | 0];
+        var dx = Math.random() < 0.5 ? PIXEL : -PIXEL;
+        s.style.transform = 'translate(' + dx + 'px,0)';
+      }
     }
     ticks++;
   }
