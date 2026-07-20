@@ -57,22 +57,40 @@ strong { font-weight: 500; }
 
 a { color: inherit; }
 
-/* пиксельные декоративные блоки — только в пустых зонах, не под текстом */
-.pxblock {
+/* ============ ACCEPTANCE RATE ============ */
+.ar-strip {
+  max-width: var(--maxw);
+  margin: 0 auto clamp(48px, 8vh, 80px);
+  padding: clamp(28px, 5vh, 48px) var(--pad) 0;
+  border-top: 1px solid var(--hair);
+  padding-top: clamp(36px, 6vh, 56px);
+}
+.ar-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.ar-num {
+  font-family: var(--display);
+  font-size: clamp(40px, 8vw, 84px);
+  line-height: 1;
+  color: var(--ink);
+  min-width: 3ch;
+}
+.ar-label {
+  font-family: var(--cond);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+}
+.ar-grid {
   display: block;
   width: 100%;
-  height: 100%;
-  opacity: 0.22;
+  height: auto;
   image-rendering: pixelated;
-  pointer-events: none;
-}
-
-.px-strip {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 var(--pad);
-  height: 90px;
-  margin-bottom: clamp(40px, 7vh, 72px);
 }
 
 h1, h2, h3 {
@@ -617,7 +635,7 @@ h2 {
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
-  .pxblock, .px-strip { display: none; }
+  .ar-grid { display: none; }
 }
 
 /* ============ RESPONSIVE ============ */

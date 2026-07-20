@@ -232,90 +232,68 @@
     });
 })();
 
-// ============ Пиксельные блоки: «Game of Life» в пустых зонах ============
-// Процедурная анимация вместо гифки: 0 сетевых запросов, ~1.5 КБ кода.
+// ============ Acceptance rate: пиксельная сетка + счётчик ============
+// Символизирует отбор: доля закрашенных пикселей растёт <1% → <2% → <3% → <4% и обратно.
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var canvas = document.getElementById('arGrid');
+  var numEl = document.getElementById('arNum');
+  if (!canvas) return;
 
-  var CELL = 8;    // размер пикселя на экране
-  var TICK = 420;  // мс между поколениями
+  var ctx = canvas.getContext('2d');
+  var CELL = 10;               // экранный пиксель
+  var cols, rows, total, order;
 
-  document.querySelectorAll('.pxblock').forEach(function (canvas) {
-    var ctx = canvas.getContext('2d');
-    var cols, rows, grid;
-
-    function resize() {
-      var r = canvas.getBoundingClientRect();
-      if (!r.width || !r.height) return;
-      cols = Math.max(4, Math.ceil(r.width / CELL));
-      rows = Math.max(4, Math.ceil(r.height / CELL));
-      canvas.width = cols;
-      canvas.height = rows;
-      seed();
-      draw();
+  function resize() {
+    var r = canvas.getBoundingClientRect();
+    if (!r.width) return;
+    cols = Math.max(20, Math.floor(r.width / CELL));
+    rows = 6;
+    canvas.width = cols;
+    canvas.height = rows;
+    total = cols * rows;
+    // случайный порядок «зажигания» ячеек — рассыпается, а не заливается рядами
+    order = Array.from({ length: total }, function (_, i) { return i; });
+    for (var i = total - 1; i > 0; i--) {
+      var j = (Math.random() * (i + 1)) | 0;
+      var t = order[i]; order[i] = order[j]; order[j] = t;
     }
+  }
 
-    function seed() {
-      grid = new Uint8Array(cols * rows);
-      for (var i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.14 ? 1 : 0;
+  // ступени: подпись + доля закрашенного (условно, для наглядности)
+  var STEPS = [
+    { label: '<1%', frac: 0.08 },
+    { label: '<2%', frac: 0.16 },
+    { label: '<3%', frac: 0.26 },
+    { label: '<4%', frac: 0.38 }
+  ];
+  var idx = 0, dir = 1, cur = 0;         // cur — текущая доля (плавная)
+
+  function draw() {
+    if (!cols) return;
+    var target = STEPS[idx].frac;
+    cur += (target - cur) * 0.12;        // плавное приближение к цели
+    var lit = Math.round(cur * total);
+    ctx.clearRect(0, 0, cols, rows);
+    for (var k = 0; k < total; k++) {
+      var on = k < lit;
+      ctx.fillStyle = on ? '#1a1a1a' : 'rgba(26,26,26,0.14)';
+      var pos = order[k];
+      ctx.fillRect(pos % cols, (pos / cols) | 0, 1, 1);
     }
+    if (numEl) numEl.textContent = STEPS[idx].label;
+    requestAnimationFrame(draw);
+  }
 
-    function step() {
-      var next = new Uint8Array(cols * rows);
-      for (var y = 0; y < rows; y++) {
-        for (var x = 0; x < cols; x++) {
-          var n = 0;
-          for (var dy = -1; dy <= 1; dy++) {
-            for (var dx = -1; dx <= 1; dx++) {
-              if (!dx && !dy) continue;
-              n += grid[((y + dy + rows) % rows) * cols + ((x + dx + cols) % cols)];
-            }
-          }
-          var alive = grid[y * cols + x];
-          next[y * cols + x] = (alive && (n === 2 || n === 3)) || (!alive && n === 3) ? 1 : 0;
-        }
-      }
-      grid = next;
-      // подсев глайдера, чтобы поле не вымирало
-      if (Math.random() < 0.2) {
-        var cx = (Math.random() * cols) | 0, cy = (Math.random() * rows) | 0;
-        [[0,0],[1,0],[2,0],[2,1],[1,2]].forEach(function (p) {
-          grid[((cy + p[1]) % rows) * cols + ((cx + p[0]) % cols)] = 1;
-        });
-      }
-    }
+  // шаг по ступеням туда-обратно
+  setInterval(function () {
+    idx += dir;
+    if (idx >= STEPS.length - 1) { idx = STEPS.length - 1; dir = -1; }
+    else if (idx <= 0) { idx = 0; dir = 1; }
+  }, 1100);
 
-    function draw() {
-      if (!grid) return;
-      ctx.clearRect(0, 0, cols, rows);
-      ctx.fillStyle = '#1a1a1a';
-      for (var y = 0; y < rows; y++) {
-        for (var x = 0; x < cols; x++) {
-          if (grid[y * cols + x]) ctx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-
-    var t;
-    function loop() {
-      clearTimeout(t);
-      step();
-      draw();
-      t = setTimeout(function () { requestAnimationFrame(loop); }, TICK);
-    }
-
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) clearTimeout(t);
-      else loop();
-    });
-
-    var rt;
-    window.addEventListener('resize', function () {
-      clearTimeout(rt);
-      rt = setTimeout(resize, 200);
-    });
-
-    resize();
-    loop();
-  });
+  var rt;
+  window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(resize, 200); });
+  resize();
+  requestAnimationFrame(draw);
 })();
