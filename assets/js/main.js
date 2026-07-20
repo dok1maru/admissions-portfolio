@@ -232,103 +232,48 @@
     });
 })();
 
-// ============ Acceptance rate: единая пиксельная система ============
+// ============ Acceptance rate: «N из 100» ============
+// Сетка из 100 квадратов; закрашены только принятые (1..5), они рассыпаются
+// по новым местам, а число < N % растёт синхронно. Спокойный ритм.
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var PIXEL = 7;    // единый размер пикселя (для мозаики и шага джиттера)
-  var TICK  = 560;  // единый такт всей микро-анимации — спокойный ритм
-  var INK   = '#9a978f'; // приглушённый серый (единый цвет)
-
-  // --- мозаики по бокам (Game of Life) ---
-  var blocks = [];
-  document.querySelectorAll('.pxblock').forEach(function (canvas) {
-    var ctx = canvas.getContext('2d');
-    var cols, rows, grid;
-    function resize() {
-      var r = canvas.getBoundingClientRect();
-      if (!r.width || !r.height) return;
-      cols = Math.max(4, Math.ceil(r.width / PIXEL));
-      rows = Math.max(4, Math.ceil(r.height / PIXEL));
-      canvas.width = cols; canvas.height = rows;
-      grid = new Uint8Array(cols * rows);
-      for (var i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.16 ? 1 : 0;
-    }
-    function step() {
-      if (!grid) return;
-      var next = new Uint8Array(cols * rows);
-      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) {
-        var n = 0;
-        for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) {
-          if (!dx && !dy) continue;
-          n += grid[((y + dy + rows) % rows) * cols + ((x + dx + cols) % cols)];
-        }
-        var a = grid[y * cols + x];
-        next[y * cols + x] = (a && (n === 2 || n === 3)) || (!a && n === 3) ? 1 : 0;
-      }
-      grid = next;
-      if (Math.random() < 0.25) {
-        var cx = (Math.random() * cols) | 0, cy = (Math.random() * rows) | 0;
-        [[0,0],[1,0],[2,0],[2,1],[1,2]].forEach(function (p) {
-          grid[((cy + p[1]) % rows) * cols + ((cx + p[0]) % cols)] = 1;
-        });
-      }
-    }
-    function draw() {
-      if (!grid) return;
-      ctx.clearRect(0, 0, cols, rows);
-      ctx.fillStyle = INK;                 // единый цвет
-      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++)
-        if (grid[y * cols + x]) ctx.fillRect(x, y, 1, 1);
-    }
-    var rt;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function(){ resize(); draw(); }, 200); });
-    resize(); draw();
-    blocks.push({ step: step, draw: draw });
-  });
-
-  // --- число по центру: <1%..<5%, джиттер шагами по PIXEL ---
+  var odds = document.getElementById('arOdds');
   var numEl = document.getElementById('arNum');
+  if (!odds || !numEl) return;
+
+  var TOTAL = 100;
+  var cells = [];
+  for (var i = 0; i < TOTAL; i++) {
+    var c = document.createElement('div');
+    c.className = 'ar-cell';
+    odds.appendChild(c);
+    cells.push(c);
+  }
+
   var STEPS = ['<1%', '<2%', '<3%', '<4%', '<5%'];
-  var idx = 0, dir = 1, ticks = 0;
-  function render(txt) {
-    numEl.innerHTML = '';
-    txt.split('').forEach(function (ch) {
-      var s = document.createElement('span');
-      s.className = 'ar-ch';
-      s.textContent = ch;
-      numEl.appendChild(s);
-    });
-  }
-  if (numEl) render(STEPS[idx]);
+  var idx = 0, dir = 1;
 
-  // единый цикл: двигает мозаику и джиттерит число в один такт
-  function frame() {
-    blocks.forEach(function (b) { b.step(); b.draw(); });
-
-    if (numEl) {
-      // каждые 3 такта меняем процент
-      if (ticks % 3 === 0) {
-        idx += dir;
-        if (idx >= STEPS.length - 1) { idx = STEPS.length - 1; dir = -1; }
-        else if (idx <= 0) { idx = 0; dir = 1; }
-        render(STEPS[idx]);
-      }
-      // джиттер: редко и мягко — не более одного символа за такт смещается
-      var chs = numEl.querySelectorAll('.ar-ch');
-      chs.forEach(function (s) { s.style.transform = 'none'; });
-      if (Math.random() < 0.6 && chs.length) {
-        var s = chs[(Math.random() * chs.length) | 0];
-        var dx = Math.random() < 0.5 ? PIXEL : -PIXEL;
-        s.style.transform = 'translate(' + dx + 'px,0)';
-      }
+  function render() {
+    numEl.textContent = STEPS[idx];
+    var count = idx + 1;                 // 1..5 закрашенных из 100
+    // выбираем count случайных индексов
+    var chosen = {};
+    while (Object.keys(chosen).length < count) {
+      chosen[(Math.random() * TOTAL) | 0] = true;
     }
-    ticks++;
+    cells.forEach(function (c, k) { c.classList.toggle('on', !!chosen[k]); });
   }
+  render();
 
-  var t = setInterval(frame, TICK);
+  var t = setInterval(function () {
+    idx += dir;
+    if (idx >= STEPS.length - 1) { idx = STEPS.length - 1; dir = -1; }
+    else if (idx <= 0) { idx = 0; dir = 1; }
+    render();
+  }, 1400);
+
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) clearInterval(t);
-    else t = setInterval(frame, TICK);
   });
 })();

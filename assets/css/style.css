@@ -63,30 +63,50 @@ a { color: inherit; }
   margin: 0 auto clamp(48px, 8vh, 80px);
   padding: clamp(36px, 6vh, 56px) var(--pad) 0;
   border-top: 1px solid var(--hair);
+}
+.ar-head {
   display: flex;
-  align-items: center;
-  gap: clamp(16px, 4vw, 40px);
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(18px, 3vh, 28px);
 }
 .ar-num {
   font-family: var(--display);
-  font-size: clamp(44px, 9vw, 96px);
+  font-size: clamp(44px, 9vw, 92px);
   line-height: 1;
-  color: #9a978f;
-  text-align: center;
-  flex: 0 0 auto;
+  color: var(--ink);
   min-width: 3.4ch;
 }
-.ar-ch {
-  display: inline-block;
-  transition: transform 0.35s ease;
-  will-change: transform;
+.ar-ch { display: inline-block; }
+.ar-cap {
+  font-family: var(--cond);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray);
 }
-.ar-side {
-  flex: 1 1 0;
-  display: block;
-  height: clamp(52px, 9vw, 90px);
-  image-rendering: pixelated;
-  pointer-events: none;
+
+/* сетка «N из 100» */
+.ar-odds {
+  display: grid;
+  grid-template-columns: repeat(25, 1fr);
+  gap: clamp(4px, 0.8vw, 8px);
+  max-width: 640px;
+}
+.ar-cell {
+  aspect-ratio: 1 / 1;
+  background: transparent;
+  border: 1.5px solid var(--hair);
+  transition: background 0.5s ease, border-color 0.5s ease;
+}
+.ar-cell.on {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .ar-odds { grid-template-columns: repeat(20, 1fr); }
 }
 
 h1, h2, h3 {
