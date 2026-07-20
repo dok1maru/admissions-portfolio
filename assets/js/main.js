@@ -232,85 +232,38 @@
     });
 })();
 
-// ============ Acceptance rate: число по центру + мозаика по бокам ============
+// ============ Acceptance rate: единая пиксельная система ============
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // --- счётчик числа: <1% -> <5% и обратно, c пиксельным глитчем ---
-  var numEl = document.getElementById('arNum');
-  if (numEl) {
-    var STEPS = ['<1%', '<2%', '<3%', '<4%', '<5%'];
-    var idx = 0, dir = 1;
-    // рендерим каждый символ отдельным span — чтобы дёргать их врозь
-    function render(txt) {
-      numEl.innerHTML = '';
-      txt.split('').forEach(function (ch) {
-        var s = document.createElement('span');
-        s.className = 'ar-ch';
-        s.textContent = ch;
-        numEl.appendChild(s);
-      });
-    }
-    render(STEPS[idx]);
+  var PIXEL = 7;    // единый размер пикселя (для мозаики и шага джиттера)
+  var TICK  = 200;  // единый такт всей микро-анимации
 
-    setInterval(function () {
-      idx += dir;
-      if (idx >= STEPS.length - 1) { idx = STEPS.length - 1; dir = -1; }
-      else if (idx <= 0) { idx = 0; dir = 1; }
-      render(STEPS[idx]);
-    }, 650);
-
-    // пиксельный джиттер: символы чуть-чуть смещаются рывками
-    setInterval(function () {
-      numEl.querySelectorAll('.ar-ch').forEach(function (s) {
-        if (Math.random() < 0.5) {
-          s.style.transform = 'none';
-          return;
-        }
-        var dx = (Math.random() * 6 - 3) | 0;   // −3..3 px, целыми — «пиксельно»
-        var dy = (Math.random() * 6 - 3) | 0;
-        s.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-        s.style.opacity = Math.random() < 0.15 ? '0.35' : '1';
-      });
-    }, 90);
-  }
-
-  // --- «Game of Life» мозаика в боковых блоках ---
-  var CELL = 8;
-  var TICK = 260; // быстрее, чем раньше
-
+  // --- мозаики по бокам (Game of Life) ---
+  var blocks = [];
   document.querySelectorAll('.pxblock').forEach(function (canvas) {
     var ctx = canvas.getContext('2d');
     var cols, rows, grid;
-
     function resize() {
       var r = canvas.getBoundingClientRect();
       if (!r.width || !r.height) return;
-      cols = Math.max(4, Math.ceil(r.width / CELL));
-      rows = Math.max(4, Math.ceil(r.height / CELL));
-      canvas.width = cols;
-      canvas.height = rows;
-      seed();
-      draw();
-    }
-    function seed() {
+      cols = Math.max(4, Math.ceil(r.width / PIXEL));
+      rows = Math.max(4, Math.ceil(r.height / PIXEL));
+      canvas.width = cols; canvas.height = rows;
       grid = new Uint8Array(cols * rows);
       for (var i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.16 ? 1 : 0;
     }
     function step() {
+      if (!grid) return;
       var next = new Uint8Array(cols * rows);
-      for (var y = 0; y < rows; y++) {
-        for (var x = 0; x < cols; x++) {
-          var n = 0;
-          for (var dy = -1; dy <= 1; dy++) {
-            for (var dx = -1; dx <= 1; dx++) {
-              if (!dx && !dy) continue;
-              n += grid[((y + dy + rows) % rows) * cols + ((x + dx + cols) % cols)];
-            }
-          }
-          var alive = grid[y * cols + x];
-          next[y * cols + x] = (alive && (n === 2 || n === 3)) || (!alive && n === 3) ? 1 : 0;
+      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) {
+        var n = 0;
+        for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) {
+          if (!dx && !dy) continue;
+          n += grid[((y + dy + rows) % rows) * cols + ((x + dx + cols) % cols)];
         }
+        var a = grid[y * cols + x];
+        next[y * cols + x] = (a && (n === 2 || n === 3)) || (!a && n === 3) ? 1 : 0;
       }
       grid = next;
       if (Math.random() < 0.25) {
@@ -323,17 +276,57 @@
     function draw() {
       if (!grid) return;
       ctx.clearRect(0, 0, cols, rows);
-      ctx.fillStyle = '#1a1a1a';
-      for (var y = 0; y < rows; y++)
-        for (var x = 0; x < cols; x++)
-          if (grid[y * cols + x]) ctx.fillRect(x, y, 1, 1);
+      ctx.fillStyle = '#1a1a1a';           // единый цвет
+      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++)
+        if (grid[y * cols + x]) ctx.fillRect(x, y, 1, 1);
     }
-    var t;
-    function loop() { clearTimeout(t); step(); draw(); t = setTimeout(function () { requestAnimationFrame(loop); }, TICK); }
-    document.addEventListener('visibilitychange', function () { if (document.hidden) clearTimeout(t); else loop(); });
     var rt;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(resize, 200); });
-    resize();
-    loop();
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function(){ resize(); draw(); }, 200); });
+    resize(); draw();
+    blocks.push({ step: step, draw: draw });
+  });
+
+  // --- число по центру: <1%..<5%, джиттер шагами по PIXEL ---
+  var numEl = document.getElementById('arNum');
+  var STEPS = ['<1%', '<2%', '<3%', '<4%', '<5%'];
+  var idx = 0, dir = 1, ticks = 0;
+  function render(txt) {
+    numEl.innerHTML = '';
+    txt.split('').forEach(function (ch) {
+      var s = document.createElement('span');
+      s.className = 'ar-ch';
+      s.textContent = ch;
+      numEl.appendChild(s);
+    });
+  }
+  if (numEl) render(STEPS[idx]);
+
+  // единый цикл: двигает мозаику и джиттерит число в один такт
+  function frame() {
+    blocks.forEach(function (b) { b.step(); b.draw(); });
+
+    if (numEl) {
+      // каждые 3 такта меняем процент
+      if (ticks % 3 === 0) {
+        idx += dir;
+        if (idx >= STEPS.length - 1) { idx = STEPS.length - 1; dir = -1; }
+        else if (idx <= 0) { idx = 0; dir = 1; }
+        render(STEPS[idx]);
+      }
+      // джиттер: смещение кратно PIXEL, тот же цвет (без прозрачности)
+      numEl.querySelectorAll('.ar-ch').forEach(function (s) {
+        var r = Math.random();
+        var dx = (r < 0.5 ? 0 : (r < 0.75 ? PIXEL : -PIXEL));
+        var dy = (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? PIXEL : -PIXEL));
+        s.style.transform = (dx || dy) ? 'translate(' + dx + 'px,' + dy + 'px)' : 'none';
+      });
+    }
+    ticks++;
+  }
+
+  var t = setInterval(frame, TICK);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) clearInterval(t);
+    else t = setInterval(frame, TICK);
   });
 })();
