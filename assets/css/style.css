@@ -61,30 +61,26 @@ a { color: inherit; }
 .ar-strip {
   max-width: var(--maxw);
   margin: 0 auto clamp(48px, 8vh, 80px);
-  padding: clamp(36px, 6vh, 56px) var(--pad) 0;
+  padding: clamp(40px, 7vh, 64px) var(--pad) 0;
   border-top: 1px solid var(--hair);
-}
-.ar-head {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: clamp(18px, 3vh, 28px);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 .ar-num {
   font-family: var(--display);
-  font-size: clamp(44px, 9vw, 92px);
+  font-size: clamp(48px, 10vw, 104px);
   line-height: 1;
   color: var(--ink);
-  min-width: 3.4ch;
 }
-.ar-ch { display: inline-block; }
-.ar-cap {
-  font-family: var(--cond);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.ar-sub {
+  font-family: var(--display);
+  font-size: clamp(15px, 2.4vw, 22px);
   color: var(--gray);
+  margin-top: 8px;
+  margin-bottom: clamp(24px, 4vh, 40px);
+  max-width: 560px;
 }
 
 /* сетка «N из 100» */
@@ -92,7 +88,9 @@ a { color: inherit; }
   display: grid;
   grid-template-columns: repeat(25, 1fr);
   gap: clamp(4px, 0.8vw, 8px);
+  width: 100%;
   max-width: 640px;
+  margin: 0 auto;
 }
 .ar-cell {
   aspect-ratio: 1 / 1;
@@ -103,6 +101,16 @@ a { color: inherit; }
 .ar-cell.on {
   background: var(--ink);
   border-color: var(--ink);
+}
+
+.ar-strip .btn-contact { margin-top: clamp(28px, 5vh, 44px); }
+.ar-hint {
+  font-family: var(--cond);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--gray);
+  margin-top: 12px;
 }
 
 @media (max-width: 560px) {
